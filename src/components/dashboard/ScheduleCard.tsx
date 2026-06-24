@@ -1,16 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -20,13 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Clock, Plus, Trash2, RefreshCw } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Clock, Plus, Trash2, RefreshCw, ToggleLeft, ToggleRight } from "lucide-react";
 import type { ScheduleEntry } from "@/types";
 
 interface ScheduleCardProps {
   schedules: ScheduleEntry[];
   onUpdate: (schedules: ScheduleEntry[]) => void;
-  /** Drift in minutes between browser and ESP32 clock */
   timeOffsetMinutes: number;
 }
 
@@ -58,11 +50,7 @@ export default function ScheduleCard({
   };
 
   const handleToggle = (id: string) => {
-    onUpdate(
-      schedules.map((s) =>
-        s.id === id ? { ...s, enabled: !s.enabled } : s
-      )
-    );
+    onUpdate(schedules.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s)));
   };
 
   const handleDelete = (id: string) => {
@@ -70,193 +58,210 @@ export default function ScheduleCard({
   };
 
   const toggleDay = (day: string) => {
-    setNewDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
+    setNewDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]));
   };
 
   return (
-    <Card className="glass-card border-0 overflow-hidden">
-      <CardHeader className="pb-2">
+    <motion.div
+      className="glass-card overflow-hidden h-full flex flex-col"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="px-4 pt-3 pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base font-semibold">
-            <div className="p-2 bg-amber-100 rounded-xl">
-              <Clock className="h-5 w-5 text-amber-600" />
-            </div>
-            Programación Horaria
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <motion.div className="p-1.5 rounded-lg bg-zinc-200/50 dark:bg-white/[0.06]" whileHover={{ scale: 1.1 }}>
+              <Clock className="h-3.5 w-3.5 text-zinc-500 dark:text-white/50" strokeWidth={1.5} />
+            </motion.div>
+            <span className="text-xs font-medium text-zinc-600 dark:text-white/60">Horarios</span>
+          </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger
               render={
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="rounded-xl border-dashed border-blue-300 text-blue-600 hover:bg-blue-50"
+                <motion.button
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-medium text-emerald-400/70 bg-emerald-500/10 border border-emerald-500/15 hover:bg-emerald-500/15 transition-colors cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 />
               }
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3" strokeWidth={1.5} />
               Añadir
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md bg-[#0a0a0a] border-zinc-200 dark:border-white/10">
               <DialogHeader>
-                <DialogTitle>Nueva Programación</DialogTitle>
-                <DialogDescription>
-                  Configura una nueva hora de alimentación automática.
+                <DialogTitle className="text-zinc-900 dark:text-white/90">Nueva Programación</DialogTitle>
+                <DialogDescription className="text-zinc-400 dark:text-white/40">
+                  Configura una hora de alimentación automática.
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-6 py-4">
-                {/* Time Picker */}
+              <div className="space-y-5 py-4">
                 <div className="space-y-2">
-                  <Label htmlFor="schedule-time">Hora</Label>
+                  <Label htmlFor="schedule-time" className="text-zinc-500 dark:text-white/50 text-xs">Hora</Label>
                   <Input
                     id="schedule-time"
                     type="time"
                     value={newTime}
                     onChange={(e) => setNewTime(e.target.value)}
-                    className="text-2xl h-14 text-center font-mono rounded-xl"
+                    className="text-xl h-12 text-center font-mono rounded-lg bg-zinc-100 dark:bg-white/[0.04] border-zinc-200 dark:border-white/[0.08] text-zinc-900 dark:text-white/90"
                   />
                 </div>
-
-                {/* Day Selector */}
                 <div className="space-y-2">
-                  <Label>Días</Label>
-                  <div className="flex gap-1.5 flex-wrap">
+                  <Label className="text-zinc-500 dark:text-white/50 text-xs">Días</Label>
+                  <div className="flex gap-1 flex-wrap">
                     {DAYS.map((day) => (
-                      <button
+                      <motion.button
                         key={day}
                         type="button"
                         onClick={() => toggleDay(day)}
-                        className={`px-3 py-2 text-xs font-medium rounded-xl transition-all duration-200 ${
+                        className={`px-2.5 py-1.5 text-[10px] font-medium rounded-md cursor-pointer transition-all duration-200 ${
                           newDays.includes(day)
-                            ? "bg-blue-500 text-white shadow-md"
-                            : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                            : "bg-zinc-100 dark:bg-white/[0.04] text-zinc-400 dark:text-white/30 border border-zinc-200 dark:border-white/[0.06] hover:bg-zinc-200/50 dark:bg-white/[0.06]"
                         }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
                         {day}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
-
-                {/* Portions */}
                 <div className="space-y-2">
-                  <Label htmlFor="portions">Porciones</Label>
+                  <Label className="text-zinc-500 dark:text-white/50 text-xs">Porciones</Label>
                   <div className="flex items-center gap-3">
-                    <Button
+                    <motion.button
                       type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-xl"
+                      className="h-8 w-8 rounded-md bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] text-zinc-500 dark:text-white/50 hover:bg-zinc-200 dark:bg-white/[0.08] transition-colors text-sm cursor-pointer"
                       onClick={() => setNewPortions(Math.max(1, newPortions - 1))}
+                      whileTap={{ scale: 0.9 }}
                     >
-                      −
-                    </Button>
-                    <span className="text-2xl font-bold w-8 text-center">
+                      -
+                    </motion.button>
+                    <span className="text-xl font-bold text-zinc-800 dark:text-white/80 w-6 text-center font-mono">
                       {newPortions}
                     </span>
-                    <Button
+                    <motion.button
                       type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-xl"
+                      className="h-8 w-8 rounded-md bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/[0.08] text-zinc-500 dark:text-white/50 hover:bg-zinc-200 dark:bg-white/[0.08] transition-colors text-sm cursor-pointer"
                       onClick={() => setNewPortions(Math.min(5, newPortions + 1))}
+                      whileTap={{ scale: 0.9 }}
                     >
                       +
-                    </Button>
+                    </motion.button>
                   </div>
                 </div>
               </div>
               <DialogFooter>
-                <Button
+                <motion.button
                   onClick={handleAddSchedule}
                   disabled={newDays.length === 0}
-                  className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600"
+                  className="w-full py-2.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   Guardar Programación
-                </Button>
+                </motion.button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
 
-        {/* Badge de sincronización inteligente */}
         {timeOffsetMinutes !== 0 && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl mt-2">
-            <RefreshCw className="h-3 w-3 text-emerald-600 animate-spin" style={{ animationDuration: '3s' }} />
-            <span className="text-[11px] font-medium text-emerald-700">
-              Sincronización Inteligente de Hardware Activa
+          <motion.div
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/5 border border-emerald-500/10 rounded-md mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <RefreshCw
+              className="h-2.5 w-2.5 text-emerald-400/50 animate-spin"
+              strokeWidth={1.5}
+              style={{ animationDuration: "3s" }}
+            />
+            <span className="text-[10px] font-medium text-emerald-400/50">
+              Sincronización Activa
             </span>
-            <span className="text-[10px] text-emerald-500 ml-auto">
-              Δ {timeOffsetMinutes > 0 ? "+" : ""}{timeOffsetMinutes}min
+            <span className="text-[9px] text-emerald-400/30 font-mono ml-auto">
+              {timeOffsetMinutes > 0 ? "+" : ""}{timeOffsetMinutes}min
             </span>
-          </div>
+          </motion.div>
         )}
-      </CardHeader>
-      <CardContent className="pb-6">
+      </div>
+
+      <div className="flex-1 px-4 pb-3 overflow-y-auto">
         {schedules.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Clock className="h-10 w-10 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No hay horarios programados</p>
-            <p className="text-xs mt-1">
-              Pulsa &quot;Añadir&quot; para crear uno
-            </p>
+          <div className="text-center py-6 text-zinc-400/70 dark:text-white/20">
+            <Clock className="h-8 w-8 mx-auto mb-2 opacity-30" strokeWidth={1.5} />
+            <p className="text-xs">Sin horarios configurados</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {schedules.map((entry) => (
-              <div
-                key={entry.id}
-                className={`flex items-center justify-between p-4 rounded-2xl transition-all duration-300 ${
-                  entry.enabled
-                    ? "bg-white/80 shadow-sm border border-slate-100"
-                    : "bg-slate-50/50 opacity-60"
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <span
-                    className={`text-2xl font-bold font-mono tracking-tight ${
-                      entry.enabled ? "text-foreground" : "text-muted-foreground"
-                    }`}
-                  >
-                    {entry.time}
-                  </span>
-                  <div>
-                    <div className="flex gap-1 flex-wrap">
-                      {entry.days.map((day) => (
-                        <span
-                          key={day}
-                          className="text-[10px] px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-600 font-medium"
-                        >
-                          {day}
-                        </span>
-                      ))}
+          <div className="space-y-1.5">
+            <AnimatePresence>
+              {schedules.map((entry, i) => (
+                <motion.div
+                  key={entry.id}
+                  className={`flex items-center justify-between p-2.5 rounded-lg transition-all duration-200 ${
+                    entry.enabled
+                      ? "bg-white/[0.03] border border-zinc-200 dark:border-white/[0.04]"
+                      : "bg-white/[0.01] border border-white/[0.02] opacity-40"
+                  }`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ delay: i * 0.05 }}
+                  layout
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-lg font-bold font-mono tracking-tight ${
+                        entry.enabled ? "text-zinc-800 dark:text-white/80" : "text-zinc-400 dark:text-white/30"
+                      }`}
+                    >
+                      {entry.time}
+                    </span>
+                    <div>
+                      <div className="flex gap-0.5 flex-wrap">
+                        {entry.days.map((day) => (
+                          <span
+                            key={day}
+                            className="text-[8px] px-1 py-0.5 rounded bg-zinc-200/50 dark:bg-white/[0.06] text-zinc-400 dark:text-white/30 font-medium"
+                          >
+                            {day}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-zinc-400/70 dark:text-white/20 mt-0.5 font-mono">
+                        {entry.portions} porción{entry.portions > 1 ? "es" : ""}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {entry.portions} porción{entry.portions > 1 ? "es" : ""}
-                    </p>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={entry.enabled}
-                    onCheckedChange={() => handleToggle(entry.id)}
-                    className="data-[state=checked]:bg-emerald-500"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(entry.id)}
-                    className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-xl"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+                  <div className="flex items-center gap-1.5">
+                    <motion.button
+                      onClick={() => handleToggle(entry.id)}
+                      className="text-zinc-400 dark:text-white/30 hover:text-zinc-600 dark:text-white/60 transition-colors p-1 cursor-pointer"
+                      whileTap={{ scale: 0.85 }}
+                    >
+                      {entry.enabled ? (
+                        <ToggleRight className="h-5 w-5 text-emerald-400/60" strokeWidth={1.5} />
+                      ) : (
+                        <ToggleLeft className="h-5 w-5" strokeWidth={1.5} />
+                      )}
+                    </motion.button>
+                    <motion.button
+                      onClick={() => handleDelete(entry.id)}
+                      className="text-zinc-350 dark:text-white/15 hover:text-red-400/60 transition-colors p-1 cursor-pointer"
+                      whileTap={{ scale: 0.85 }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </motion.div>
   );
 }

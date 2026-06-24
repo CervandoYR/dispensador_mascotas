@@ -1,11 +1,8 @@
 "use client";
 
-// ============================================================
-// PetFeeder Pro — Settings Page
-// ============================================================
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   Bell,
   Cpu,
@@ -142,50 +139,55 @@ export default function SettingsPage() {
     { label: "Broker", value: "broker.hivemq.com" },
   ];
 
-  // ── Render ──────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen bg-background text-foreground transition-colors duration-300 py-8">
+      {/* Malla decorativa de fondo */}
+      <div className="absolute inset-0 grid-bg pointer-events-none z-0" />
+
+      <div className="relative z-10 mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+        
         {/* ── Header ─────────────────────────────────────────── */}
         <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver al panel
+          <Link href="/dashboard" passHref legacyBehavior>
+            <motion.a
+              className="mb-4 inline-flex items-center gap-2 text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:text-white/40 dark:hover:text-white/80 transition-colors cursor-pointer"
+              whileHover={{ x: -3 }}
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Volver al panel
+            </motion.a>
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-800 dark:text-white/95">
             Configuración
           </h1>
-          <p className="mt-1 text-slate-500">
-            Ajusta las preferencias de tu dispensador inteligente
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            Ajusta las preferencias de tu dispensador inteligente PetFeeder Pro
           </p>
         </div>
 
         <div className="space-y-6">
           {/* ── Telegram Notifications Card ───────────────────── */}
-          <Card className="border-white/60 bg-white/70 shadow-lg backdrop-blur-xl">
-            <CardHeader>
+          <Card className="glass-card border border-zinc-200 dark:border-white/[0.06] bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden relative">
+            <CardHeader className="pb-3 pt-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-                  <Bell className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400">
+                  <Bell className="h-4.5 w-4.5" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-sm font-bold text-zinc-800 dark:text-white/95">
                     Notificaciones Telegram
                   </CardTitle>
-                  <CardDescription>
-                    Recibe alertas críticas directamente en tu Telegram
+                  <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Recibe alertas críticas de alimentación y atascos directamente en tu Telegram
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-5">
+            <CardContent className="space-y-4">
               {/* Bot Token */}
-              <div className="space-y-2">
-                <Label htmlFor="bot-token" className="text-sm font-medium">
+              <div className="space-y-1.5">
+                <Label htmlFor="bot-token" className="text-xs font-medium text-zinc-650 dark:text-zinc-400">
                   Token del Bot
                 </Label>
                 <Input
@@ -199,13 +201,13 @@ export default function SettingsPage() {
                       botToken: e.target.value,
                     }))
                   }
-                  className="border-slate-200 bg-white/80 transition-shadow focus:shadow-md"
+                  className="h-9 rounded-lg border-zinc-200 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-white/[0.02] text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20 text-xs"
                 />
               </div>
 
               {/* Chat ID */}
-              <div className="space-y-2">
-                <Label htmlFor="chat-id" className="text-sm font-medium">
+              <div className="space-y-1.5">
+                <Label htmlFor="chat-id" className="text-xs font-medium text-zinc-650 dark:text-zinc-400">
                   Chat ID
                 </Label>
                 <Input
@@ -219,22 +221,22 @@ export default function SettingsPage() {
                       chatId: e.target.value,
                     }))
                   }
-                  className="border-slate-200 bg-white/80 transition-shadow focus:shadow-md"
+                  className="h-9 rounded-lg border-zinc-200 dark:border-white/[0.06] bg-zinc-50/50 dark:bg-white/[0.02] text-zinc-800 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20 text-xs"
                 />
               </div>
 
-              <Separator />
+              <Separator className="bg-zinc-200 dark:bg-white/[0.04]" />
 
               {/* Enable toggle */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label
                     htmlFor="telegram-toggle"
-                    className="text-sm font-medium"
+                    className="text-xs font-semibold text-zinc-800 dark:text-white/90"
                   >
                     Habilitar notificaciones
                   </Label>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-[10px] text-zinc-450 dark:text-zinc-500">
                     Activa o desactiva el envío de alertas
                   </p>
                 </div>
@@ -247,70 +249,72 @@ export default function SettingsPage() {
                       enabled: checked,
                     }))
                   }
+                  className="cursor-pointer"
                 />
               </div>
 
-              <Separator />
+              <Separator className="bg-zinc-200 dark:bg-white/[0.04]" />
 
               {/* Action buttons */}
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button
+              <div className="flex flex-col gap-3 sm:flex-row pt-1">
+                <motion.button
                   onClick={handleSaveTelegram}
-                  className="flex-1 bg-blue-600 text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg"
+                  className="flex-1 h-9 rounded-lg bg-emerald-500 text-white dark:bg-emerald-500/10 border border-emerald-500/20 dark:text-emerald-400 font-semibold text-xs flex items-center justify-center gap-1.5 hover:bg-emerald-600 dark:hover:bg-emerald-500/15 cursor-pointer transition-all duration-200 shadow-md shadow-emerald-500/10 dark:shadow-none"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   Guardar configuración
-                </Button>
-                <Button
-                  variant="outline"
+                </motion.button>
+                <motion.button
                   onClick={handleTestTelegram}
                   disabled={isSendingTest}
-                  className="flex-1 border-blue-200 text-blue-700 transition-all hover:bg-blue-50"
+                  className="flex-1 h-9 rounded-lg border border-zinc-200 dark:border-white/[0.06] text-zinc-600 hover:bg-zinc-50 hover:text-zinc-800 dark:text-white/60 dark:hover:bg-white/[0.04] dark:hover:text-white/80 font-semibold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-200 disabled:opacity-50"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {isSendingTest ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <Send className="mr-2 h-4 w-4" />
+                    <Send className="h-3.5 w-3.5" strokeWidth={1.5} />
                   )}
-                  {isSendingTest
-                    ? "Enviando…"
-                    : "Enviar mensaje de prueba"}
-                </Button>
+                  {isSendingTest ? "Enviando…" : "Enviar mensaje de prueba"}
+                </motion.button>
               </div>
             </CardContent>
           </Card>
 
           {/* ── Hardware Configuration Card ───────────────────── */}
-          <Card className="border-white/60 bg-white/70 shadow-lg backdrop-blur-xl">
-            <CardHeader>
+          <Card className="glass-card border border-zinc-200 dark:border-white/[0.06] bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden relative">
+            <CardHeader className="pb-3 pt-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
-                  <Cpu className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400">
+                  <Cpu className="h-4.5 w-4.5" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-sm font-bold text-zinc-800 dark:text-white/95">
                     Configuración del Hardware
                   </CardTitle>
-                  <CardDescription>
-                    Ajustes del dispensador ESP32
+                  <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Ajustes de alertas de zumbador físico
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
 
             <CardContent>
-              <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/60 p-4 transition-colors">
+              <div className="flex items-center justify-between rounded-xl border border-zinc-150 dark:border-white/[0.02] bg-zinc-50/50 dark:bg-white/[0.02] p-4 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
-                    <Volume2 className="h-4 w-4" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 dark:text-emerald-400">
+                    <Volume2 className="h-4.5 w-4.5" strokeWidth={1.5} />
                   </div>
                   <div className="space-y-0.5">
                     <Label
                       htmlFor="buzzer-toggle"
-                      className="text-sm font-medium"
+                      className="text-xs font-semibold text-zinc-800 dark:text-white/90 flex items-center"
                     >
                       Habilitar Aviso Sonoro (Buzzer)
                     </Label>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-[10px] text-zinc-450 dark:text-zinc-500">
                       El dispositivo emitirá un sonido al dispensar comida
                     </p>
                   </div>
@@ -319,23 +323,24 @@ export default function SettingsPage() {
                   id="buzzer-toggle"
                   checked={buzzerEnabled}
                   onCheckedChange={handleBuzzerToggle}
+                  className="cursor-pointer"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* ── Device Info Card ──────────────────────────────── */}
-          <Card className="border-white/60 bg-white/70 shadow-lg backdrop-blur-xl">
-            <CardHeader>
+          <Card className="glass-card border border-zinc-200 dark:border-white/[0.06] bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden relative">
+            <CardHeader className="pb-3 pt-5">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                  <Info className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400">
+                  <Info className="h-4.5 w-4.5" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">
+                  <CardTitle className="text-sm font-bold text-zinc-800 dark:text-white/95">
                     Información del Dispositivo
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                     Detalles técnicos y estado del sistema
                   </CardDescription>
                 </div>
@@ -343,14 +348,14 @@ export default function SettingsPage() {
             </CardHeader>
 
             <CardContent>
-              <div className="divide-y divide-slate-100 rounded-xl border border-slate-100 bg-slate-50/60">
+              <div className="divide-y divide-zinc-200/50 dark:divide-white/[0.04] rounded-xl border border-zinc-200 dark:border-white/[0.06] bg-zinc-50/30 dark:bg-white/[0.01] overflow-hidden">
                 {deviceInfoItems.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between px-4 py-3"
+                    className="flex items-center justify-between px-4 py-2.5 transition-colors"
                   >
-                    <span className="text-sm text-slate-500">{item.label}</span>
-                    <span className="text-sm font-medium text-slate-800">
+                    <span className="text-xs text-zinc-500 dark:text-zinc-500">{item.label}</span>
+                    <span className="text-xs font-semibold text-zinc-700 dark:text-white/80 font-mono">
                       {item.value}
                     </span>
                   </div>
@@ -361,7 +366,7 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Footer ─────────────────────────────────────────── */}
-        <p className="mt-8 text-center text-xs text-slate-400">
+        <p className="mt-8 text-center text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">
           PetFeeder Pro v2.4.1 · Hecho con 🐾 para tu mascota
         </p>
       </div>

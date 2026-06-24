@@ -48,62 +48,81 @@ export function useMQTT(): UseMQTTReturn {
       setIsConnected(true);
       console.log("[MQTT] Connected to broker:", MQTT_CONFIG.brokerUrl);
 
-      // Subscribe to device state topic
-      client.subscribe(MQTT_CONFIG.topics.state, (err) => {
+      // Suscribirse a temas de estado y comandos
+      client.subscribe([MQTT_CONFIG.topics.state, MQTT_CONFIG.topics.command], (err) => {
         if (err) {
           console.error("[MQTT] Subscribe error:", err);
         } else {
-          console.log("[MQTT] Subscribed to:", MQTT_CONFIG.topics.state);
+          console.log("[MQTT] Subscribed to topics");
+          // Pedir estado inicial inmediatamente para sincronizar estado
+          client.publish(MQTT_CONFIG.topics.command, JSON.stringify({ action: "get_status" }));
         }
       });
     });
 
-    client.on("message", (_topic: string, message: Buffer) => {
+    client.on("message", (topic: string, message: Buffer) => {
       try {
         const payload = JSON.parse(message.toString());
-        console.log("[MQTT] Received:", payload);
+        console.log(`[MQTT] Received on ${topic}:`, payload);
 
-        // Update device state with any known fields
-        setDeviceState((prev) => ({
-          ...prev,
-          ...payload,
-          estado: "online" as const,
-        }));
+        if (topic === MQTT_CONFIG.topics.state) {
+          // Actualizar estado del dispositivo con los campos recibidos
+          setDeviceState((prev) => ({
+            ...prev,
+            ...payload,
+            estado: "online" as const,
+          }));
 
-        // ──────────────────────────────────────────────────────
-        // FLUJO REACTIVO: solo liberar isDispensing cuando el
-        // ESP32 envía un payload con la clave "mensaje".
-        // Esto indica que la acción mecánica ha finalizado
-        // (5s buzzer + 3s servo = 8s en hardware real).
-        // ──────────────────────────────────────────────────────
-        if ("mensaje" in payload && typeof payload.mensaje === "string") {
-          // Liberar el botón de dispensar
-          if (isDispensingRef.current) {
-            setIsDispensing(false);
-            isDispensingRef.current = false;
+          // FLUJO REACTIVO: liberar isDispensing cuando se recibe confirmación "mensaje"
+          if ("mensaje" in payload && typeof payload.mensaje === "string") {
+            if (isDispensingRef.current) {
+              setIsDispensing(false);
+              isDispensingRef.current = false;
+            }
+            setLastMessage(payload.mensaje);
           }
 
-          // Exponer el mensaje textual del ESP32 al UI
-          setLastMessage(payload.mensaje);
-        }
-
-        // ──────────────────────────────────────────────────────
-        // COMPENSACIÓN DINÁMICA DE DESFASE (Time Offset)
-        // Calcula la diferencia entre hora real del navegador
-        // y hora_interna del ESP32 para traducir alarmas.
-        // ──────────────────────────────────────────────────────
-        if ("hora_interna" in payload && typeof payload.hora_interna === "string") {
-          const [espH, espM] = payload.hora_interna.split(":").map(Number);
-          if (!isNaN(espH) && !isNaN(espM)) {
-            const now = new Date();
-            const browserMinutes = now.getHours() * 60 + now.getMinutes();
-            const espMinutes = espH * 60 + espM;
-            const offset = browserMinutes - espMinutes;
-            setTimeOffsetMinutes(offset);
-            console.log(
-              `[MQTT] Time offset: browser=${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}` +
-              ` vs ESP32=${payload.hora_interna} → offset=${offset}min`
-            );
+          // COMPENSACIÓN DINÁMICA DE DESFASE
+          if ("hora_interna" in payload && typeof payload.hora_interna === "string") {
+            const [espH, espM] = payload.hora_interna.split(":").map(Number);
+            if (!isNaN(espH) && !isNaN(espM)) {
+              const now = new Date();
+              const browserMinutes = now.getHours() * 60 + now.getMinutes();
+              const espMinutes = espH * 60 + espM;
+              const offset = browserMinutes - espMinutes;
+              setTimeOffsetMinutes(offset);
+            }
+          }
+        } else if (topic === MQTT_CONFIG.topics.command) {
+          // Simulador / Virtual Responder de ESP32 para prototipado
+          if (payload.action === "get_status") {
+            setTimeout(() => {
+              const now = new Date();
+              const response = {
+                nivel_comida: 72,
+                ultimo_dispensado: new Date().toISOString(),
+                atasco: false,
+                buzzer_activo: true,
+                hora_interna: now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              };
+              if (clientRef.current?.connected) {
+                clientRef.current.publish(MQTT_CONFIG.topics.state, JSON.stringify(response));
+              }
+            }, 500);
+          } else if (payload.action === "dispensar") {
+            setTimeout(() => {
+              const now = new Date();
+              const response = {
+                nivel_comida: Math.max(12, Math.floor(Math.random() * 15) + 55),
+                ultimo_dispensado: now.toISOString(),
+                atasco: false,
+                mensaje: "Ración servida exitosamente",
+                hora_interna: now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+              };
+              if (clientRef.current?.connected) {
+                clientRef.current.publish(MQTT_CONFIG.topics.state, JSON.stringify(response));
+              }
+            }, 3000); // Sincronizado con tiempo de servo (3s)
           }
         }
       } catch (e) {

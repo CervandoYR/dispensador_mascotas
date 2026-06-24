@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { Droplets, AlertTriangle, Clock } from "lucide-react";
 
 interface FoodLevelCardProps {
@@ -14,33 +9,45 @@ interface FoodLevelCardProps {
   hasJam: boolean;
 }
 
-/**
- * Semicircular gauge showing the food level percentage.
- * Colors: green >50%, amber 20-50%, red <20%.
- */
 export default function FoodLevelCard({
   level,
   lastDispensed,
   hasJam,
 }: FoodLevelCardProps) {
-  // Clamp level between 0-100
   const clampedLevel = Math.max(0, Math.min(100, level));
 
-  // SVG semicircle gauge parameters
   const radius = 80;
-  const circumference = Math.PI * radius; // half-circle
+  const circumference = Math.PI * radius;
   const offset = circumference - (clampedLevel / 100) * circumference;
 
-  // Determine color based on level
   const getColor = (l: number) => {
-    if (l > 50) return { stroke: "#10b981", bg: "bg-emerald-50", text: "text-emerald-700", label: "Nivel Óptimo" };
-    if (l > 20) return { stroke: "#f59e0b", bg: "bg-amber-50", text: "text-amber-700", label: "Nivel Medio" };
-    return { stroke: "#ef4444", bg: "bg-red-50", text: "text-red-700", label: "Nivel Crítico" };
+    if (l > 50)
+      return {
+        stroke: "#10b981",
+        glow: "rgba(16, 185, 129, 0.3)",
+        label: "Óptimo",
+        labelBg: "bg-emerald-500/10",
+        labelText: "text-emerald-400/80",
+      };
+    if (l > 20)
+      return {
+        stroke: "#f59e0b",
+        glow: "rgba(245, 158, 11, 0.3)",
+        label: "Medio",
+        labelBg: "bg-amber-500/10",
+        labelText: "text-amber-400/80",
+      };
+    return {
+      stroke: "#ef4444",
+      glow: "rgba(239, 68, 68, 0.3)",
+      label: "Crítico",
+      labelBg: "bg-red-500/10",
+      labelText: "text-red-400/80",
+    };
   };
 
   const color = getColor(clampedLevel);
 
-  // Format last dispensed time
   const formatTime = (iso: string) => {
     try {
       const date = new Date(iso);
@@ -54,81 +61,98 @@ export default function FoodLevelCard({
   };
 
   return (
-    <Card className="glass-card border-0 overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <div className="p-2 bg-blue-100 rounded-xl">
-            <Droplets className="h-5 w-5 text-blue-600" />
-          </div>
-          Nivel de Comida
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center pt-0 pb-6">
-        {/* Semicircular Gauge */}
-        <div className="relative w-48 h-28 mb-2">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 200 110"
-            fill="none"
+    <motion.div
+      className="glass-card overflow-hidden"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <motion.div
+            className="p-1.5 rounded-lg bg-zinc-200/50 dark:bg-white/[0.06]"
+            whileHover={{ scale: 1.1 }}
           >
-            {/* Background arc */}
+            <Droplets className="h-3.5 w-3.5 text-zinc-500 dark:text-white/50" strokeWidth={1.5} />
+          </motion.div>
+          <span className="text-xs font-medium text-zinc-600 dark:text-white/60">
+            Nivel de Comida
+          </span>
+        </div>
+        <span className="text-[10px] font-mono text-zinc-400/80 dark:text-white/25 bg-zinc-100 dark:bg-white/[0.04] px-2 py-0.5 rounded">
+          HC-SR04
+        </span>
+      </div>
+
+      <div className="flex flex-col items-center pt-2 pb-4 px-4">
+        <div className="relative w-44 h-24 mb-3">
+          <svg className="w-full h-full" viewBox="0 0 200 110" fill="none">
             <path
               d="M 20 100 A 80 80 0 0 1 180 100"
-              stroke="#e5e7eb"
-              strokeWidth="16"
+              stroke="rgba(255,255,255,0.04)"
+              strokeWidth="14"
               strokeLinecap="round"
               fill="none"
             />
-            {/* Filled arc */}
-            <path
+            <motion.path
               d="M 20 100 A 80 80 0 0 1 180 100"
               stroke={color.stroke}
-              strokeWidth="16"
+              strokeWidth="14"
               strokeLinecap="round"
               fill="none"
               strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              className="transition-all duration-1000 ease-out"
-              style={{ animation: "gauge-fill 1.5s ease-out" }}
+              initial={{ strokeDashoffset: circumference }}
+              animate={{ strokeDashoffset: offset }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              style={{
+                filter: `drop-shadow(0 0 6px ${color.glow})`,
+              }}
             />
           </svg>
-          {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
-            <span className="text-4xl font-bold tracking-tight">{clampedLevel}</span>
-            <span className="text-sm text-muted-foreground -mt-1">%</span>
+            <span className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white/90">
+              {clampedLevel}
+            </span>
+            <span className="text-[10px] text-zinc-400 dark:text-white/30 -mt-0.5">%</span>
           </div>
         </div>
 
-        {/* Status badge */}
-        <div
-          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${color.bg} ${color.text} mb-4`}
+        <motion.div
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium ${color.labelBg} ${color.labelText} mb-3`}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.8 }}
         >
-          <span
+          <motion.span
             className="h-1.5 w-1.5 rounded-full"
             style={{ backgroundColor: color.stroke }}
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
           />
           {color.label}
-        </div>
+        </motion.div>
 
-        {/* Jam alert */}
         {hasJam && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm mb-3 w-full animate-pulse">
-            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-            <span className="font-medium">¡Atasco detectado!</span>
-          </div>
+          <motion.div
+            className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-[11px] mb-3 w-full"
+            animate={{ opacity: [1, 0.6, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" strokeWidth={1.5} />
+            <span className="font-medium">Atasco detectado</span>
+          </motion.div>
         )}
 
-        {/* Last dispensed */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-3.5 w-3.5" />
+        <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 dark:text-white/30">
+          <Clock className="h-3 w-3" strokeWidth={1.5} />
           <span>
             Última ración a las{" "}
-            <span className="font-semibold text-foreground" suppressHydrationWarning>
+            <span className="font-mono text-zinc-500 dark:text-white/50" suppressHydrationWarning>
               {formatTime(lastDispensed)}
             </span>
           </span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </motion.div>
   );
 }

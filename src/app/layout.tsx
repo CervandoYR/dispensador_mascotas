@@ -1,26 +1,22 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import FloatingKibbles from "@/components/layout/FloatingKibbles";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "PetFeeder Pro — Alimentación Inteligente para tu Mascota",
+  title: "PetFeeder Pro — Plataforma IoT de Nutrición Inteligente",
   description:
-    "Plataforma IoT para controlar, programar y monitorear la alimentación de tu mascota desde cualquier lugar. Tecnología ESP32 con MQTT.",
+    "Plataforma IoT de grado industrial para alimentación automatizada de mascotas. Monitoreo MQTT en tiempo real, visión ESP32-CAM, analítica HX711 e identificación RFID.",
   keywords: [
-    "pet feeder",
+    "dispensador mascotas",
     "IoT",
     "ESP32",
     "MQTT",
-    "mascota",
-    "dispensador",
-    "automatizado",
+    "alimentación inteligente",
+    "HX711",
+    "RFID",
+    "ESP32-CAM",
   ],
 };
 
@@ -30,17 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
-        {children}
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-          toastOptions={{
-            duration: 4000,
-          }}
-        />
+    <html lang="es" className="h-full antialiased" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col font-sans bg-background text-foreground transition-colors duration-300">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <FloatingKibbles />
+          <div className="glow-mesh" />
+          {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            toastOptions={{
+              duration: 4000,
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

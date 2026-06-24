@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { PawPrint, LayoutDashboard, Settings, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ThemeToggle from "@/components/layout/ThemeToggle";
+import BrandLogo from "@/components/layout/BrandLogo";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -16,29 +20,16 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("petfeeder_user");
     localStorage.removeItem("petfeeder_schedules");
-    window.location.href = "/";
+    router.push("/");
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-white/[0.04] bg-white/60 dark:bg-black/60 backdrop-blur-xl transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2.5 group"
-          >
-            <div className="p-1.5 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
-              <PawPrint className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight">
-              PetFeeder{" "}
-              <span className="gradient-text">Pro</span>
-            </span>
-          </Link>
+        <div className="flex h-14 items-center justify-between">
+          <BrandLogo href="/dashboard" />
 
-          {/* Nav Links */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -46,24 +37,31 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200",
                     isActive
-                      ? "bg-blue-50 text-blue-700 shadow-sm"
-                      : "text-muted-foreground hover:bg-slate-100 hover:text-foreground"
+                      ? "bg-zinc-100 text-zinc-900 dark:bg-white/[0.08] dark:text-white"
+                      : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-white/40 dark:hover:bg-white/[0.04] dark:hover:text-white/70"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-3.5 w-3.5" strokeWidth={1.5} />
                   <span className="hidden sm:inline">{item.label}</span>
                 </Link>
               );
             })}
-            <button
+            
+            <div className="mx-1.5 h-4 w-px bg-zinc-200 dark:bg-white/10" />
+
+            <ThemeToggle />
+
+            <motion.button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-all duration-200 ml-2"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:bg-red-500/10 hover:text-red-500 dark:text-white/30 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-all duration-200 ml-1 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
               <span className="hidden sm:inline">Salir</span>
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
