@@ -1,6 +1,4 @@
-// ============================================================
 // PetFeeder Pro — Telegram Notification API Route
-// ============================================================
 // POST /api/telegram
 // Forwards critical alerts to a Telegram chat via the Bot API.
 
