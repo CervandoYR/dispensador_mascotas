@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import AccessibilityToggle from "@/components/layout/AccessibilityToggle";
 import BrandLogo from "@/components/layout/BrandLogo";
 
 export default function Navbar() {
@@ -52,6 +53,7 @@ export default function Navbar() {
             <div className="mx-1.5 h-4 w-px bg-zinc-200 dark:bg-white/10" />
 
             <ThemeToggle />
+            <AccessibilityToggle />
 
             <motion.button
               onClick={handleLogout}

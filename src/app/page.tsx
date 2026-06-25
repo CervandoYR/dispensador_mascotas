@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import AccessibilityToggle from "@/components/layout/AccessibilityToggle";
 import BrandLogo from "@/components/layout/BrandLogo";
 import {
   ShieldCheck,
@@ -118,28 +119,28 @@ const features = [
   },
   {
     icon: Wifi,
-    title: "Protocolo MQTT en Vivo",
-    description: "Comunicación bidireccional ultrarrápida a través de WebSockets para un control en tiempo real en milisegundos.",
+    title: "Control en Tiempo Real",
+    description: "Comunicación ultrarrápida para que cada ajuste que hagas desde tu celular se refleje de manera instantánea en el dispensador.",
     accent: "from-blue-500/20 to-blue-500/0",
     iconColor: "text-blue-400",
     iconBg: "bg-blue-500/10 border-blue-500/20",
-    stat: "<35ms",
-    statLabel: "latencia",
+    stat: "Al Instante",
+    statLabel: "sin retrasos",
   },
   {
     icon: Gauge,
-    title: "Lecturas Ultrasónicas",
-    description: "Medición constante del nivel de depósito de comida mediante sensores HC-SR04 de alta fiabilidad.",
+    title: "Nivel de Comida Exacto",
+    description: "Sensores de alta fiabilidad miden constantemente el volumen del depósito para que siempre sepas cuánta comida queda.",
     accent: "from-amber-500/20 to-amber-500/0",
     iconColor: "text-amber-400",
     iconBg: "bg-amber-500/10 border-amber-500/20",
-    stat: "±0.5cm",
+    stat: "Alta",
     statLabel: "precisión",
   },
   {
     icon: TrendingUp,
     title: "Analítica Predictiva",
-    description: "Visualiza curvas de consumo real de alimento y estima de forma inteligente cuándo necesitarás recargar.",
+    description: "Visualiza curvas de consumo real de alimento y estima de forma inteligente cuándo necesitarás recargar el depósito.",
     accent: "from-purple-500/20 to-purple-500/0",
     iconColor: "text-purple-400",
     iconBg: "bg-purple-500/10 border-purple-500/20",
@@ -148,8 +149,8 @@ const features = [
   },
   {
     icon: MapPin,
-    title: "Geolocalización GPS",
-    description: "Localiza tu dispensador en tiempo real con módulo NEO-6M, geocerca inteligente y alertas si se mueve de zona.",
+    title: "Seguimiento GPS",
+    description: "Localiza tu dispensador en tiempo real con geocerca inteligente y alertas inmediatas si el equipo se mueve de zona.",
     accent: "from-cyan-500/20 to-cyan-500/0",
     iconColor: "text-cyan-400",
     iconBg: "bg-cyan-500/10 border-cyan-500/20",
@@ -159,13 +160,13 @@ const features = [
 ];
 
 const techStack = [
-  { icon: Cpu, label: "ESP32-S3", desc: "Core de Procesamiento" },
-  { icon: Camera, label: "ESP32-CAM", desc: "Monitoreo por Video" },
-  { icon: Scale, label: "HX711", desc: "Celda de Carga (Báscula)" },
-  { icon: Scan, label: "RC522", desc: "Identificación RFID" },
-  { icon: Wifi, label: "MQTT/WS", desc: "Baja Latencia IoT" },
-  { icon: Activity, label: "PIR Sensor", desc: "Presencia Activa" },
-  { icon: MapPin, label: "NEO-6M", desc: "GPS en Tiempo Real" },
+  { icon: Cpu, label: "Procesador Inteligente", desc: "Núcleo del Sistema" },
+  { icon: Camera, label: "Cámara Integrada", desc: "Monitoreo por Video" },
+  { icon: Scale, label: "Sensor de Peso", desc: "Báscula de Precisión" },
+  { icon: Scan, label: "Reconocimiento", desc: "Identificación de Mascotas" },
+  { icon: Wifi, label: "Conexión Constante", desc: "Respuesta Inmediata" },
+  { icon: Activity, label: "Sensor de Presencia", desc: "Detecta Actividad" },
+  { icon: MapPin, label: "Ubicación GPS", desc: "Seguimiento Continuo" },
 ];
 
 const steps = [
@@ -176,23 +177,23 @@ const steps = [
 
 const testimonials = [
   {
-    name: "Dr. Valeria Gutiérrez",
-    role: "Veterinaria Especialista",
-    text: "PetFeeder Pro ha supuesto un cambio radical para mis pacientes con dietas estrictas. El registro en tiempo real por RFID asegura que la dosis exacta vaya al animal correcto.",
+    name: "Dueños que trabajan tarde",
+    role: "Automatización de Rutinas",
+    text: "Mantén el horario de comida de tu mascota sin importar si te quedas horas extra en la oficina. El dispensador sirve las raciones programadas de manera autónoma.",
     rating: 5,
     gradient: "from-teal-500 to-emerald-500"
   },
   {
-    name: "Diego Mendoza",
-    role: "Ingeniero IoT",
-    text: "La velocidad de respuesta mediante WebSockets MQTT es impresionante. La simulación y la integración API son limpias y estables. Hardware de grado comercial.",
+    name: "Mascotas con dietas estrictas",
+    role: "Control de Porciones",
+    text: "Controla los gramos exactos que consume tu mascota. El sensor de peso de alta precisión asegura que la dosis exacta se libere en cada toma.",
     rating: 5,
     gradient: "from-blue-500 to-indigo-500"
   },
   {
-    name: "Camila Herrera",
-    role: "Pet Sitter Profesional",
-    text: "Administro múltiples dispensadores en mi hotel de mascotas. El panel de analítica me permite rastrear patrones de alimentación y avisar a los dueños de anomalías al instante.",
+    name: "Viajes cortos de fin de semana",
+    role: "Monitoreo Remoto",
+    text: "Monitorea a través del Dashboard en vivo que tu mascota esté comiendo bien mientras estás fuera. Recibe alertas instantáneas en tu celular si ocurre un atasco.",
     rating: 5,
     gradient: "from-purple-500 to-pink-500"
   }
@@ -489,6 +490,7 @@ export default function Home() {
             <a href="#precios" className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:text-white/35 dark:hover:text-zinc-800 dark:text-white/70 transition-colors hidden sm:block">Precios</a>
             
             <ThemeToggle />
+            <AccessibilityToggle />
             
             <Link
               href="/auth"
@@ -569,7 +571,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              Alimentación automatizada de alta precisión. Monitoreo mediante protocolo MQTT en tiempo real, transmisión por video en vivo con ESP32-CAM y lecturas predictivas de consumo.
+              Alimentación automatizada de alta precisión. Conectividad ininterrumpida para control en tiempo real, monitoreo en vivo por cámara integrada y análisis inteligente de hábitos de consumo.
             </motion.p>
 
             <motion.div
@@ -1148,15 +1150,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ──── Testimonios Carrusel ──── */}
+      {/* ──── Casos de Uso Carrusel ──── */}
       <section className="relative bg-background/90 dark:bg-background/90 px-6 py-20 sm:py-28 border-t border-zinc-200 dark:border-white/[0.03] z-10">
         <div className="mx-auto max-w-4xl">
           <div className="text-center mb-12">
             <span className="inline-block rounded-lg bg-zinc-100 dark:bg-white/[0.03] px-3 py-1 text-[11px] font-medium text-zinc-500 dark:text-white/40 border border-zinc-200 dark:border-white/[0.06]">
-              Testimonios
+              Casos de Uso
             </span>
             <h2 className="mt-4 text-2xl font-bold tracking-tight text-zinc-900 dark:text-white/90 sm:text-3xl">
-              Lo que dicen nuestros <span className="gradient-text">usuarios</span>
+              Diseñado para la <span className="gradient-text">vida real</span>
             </h2>
           </div>
 

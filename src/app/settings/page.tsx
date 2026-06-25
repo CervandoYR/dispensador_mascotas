@@ -41,6 +41,7 @@ export default function SettingsPage() {
 
   // ── Device info state ───────────────────────────────────────
   const [deviceId, setDeviceId] = useState("—");
+  const [advancedMode, setAdvancedMode] = useState(false);
 
   // ── Load saved settings on mount ────────────────────────────
   useEffect(() => {
@@ -132,12 +133,18 @@ export default function SettingsPage() {
   }
 
   // ── Device info items ───────────────────────────────────────
-  const deviceInfoItems = [
-    { label: "ID del Dispositivo", value: deviceId },
-    { label: "Versión de Firmware", value: "v2.4.1" },
-    { label: "Protocolo de Conexión", value: "MQTT over WebSocket" },
-    { label: "Broker", value: "broker.hivemq.com" },
-  ];
+  const deviceInfoItems = advancedMode
+    ? [
+        { label: "ID del Dispositivo (MAC)", value: deviceId },
+        { label: "Versión de Firmware", value: "v2.4.1" },
+        { label: "Protocolo de Conexión", value: "MQTT over WebSocket" },
+        { label: "Broker MQTT", value: "broker.hivemq.com" },
+      ]
+    : [
+        { label: "Código de Vinculación", value: deviceId },
+        { label: "Estado del Sistema", value: "Actualizado" },
+        { label: "Conexión", value: "En línea (Segura)" },
+      ];
 
   return (
     <div className="relative min-h-screen bg-background text-foreground transition-colors duration-300 py-8">
@@ -336,13 +343,22 @@ export default function SettingsPage() {
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400">
                   <Info className="h-4.5 w-4.5" strokeWidth={1.5} />
                 </div>
-                <div>
+                <div className="flex-1">
                   <CardTitle className="text-sm font-bold text-zinc-800 dark:text-white/95">
                     Información del Dispositivo
                   </CardTitle>
                   <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Detalles técnicos y estado del sistema
+                    Detalles y estado del sistema
                   </CardDescription>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <Label htmlFor="advanced-mode" className="text-[9px] text-zinc-500 cursor-pointer">Modo Avanzado</Label>
+                  <Switch 
+                    id="advanced-mode" 
+                    checked={advancedMode} 
+                    onCheckedChange={setAdvancedMode} 
+                    className="scale-75 origin-right cursor-pointer" 
+                  />
                 </div>
               </div>
             </CardHeader>
