@@ -367,7 +367,7 @@ export default function SettingsPage() {
 
         {/* ── Footer ─────────────────────────────────────────── */}
         <p className="mt-8 text-center text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">
-          PetFeeder Pro v2.4.1 · Hecho con 🐾 para tu mascota
+          PetFeeder Pro
         </p>
       </div>
     </div>
