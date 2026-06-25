@@ -4,7 +4,7 @@
 
 export const MQTT_CONFIG = {
   /** HiveMQ public broker WebSocket endpoint */
-  brokerUrl: "ws://broker.hivemq.com:8000/mqtt",
+  brokerUrl: "wss://broker.hivemq.com:8884/mqtt",
 
   /** MQTT topics for PetFeeder communication */
   topics: {
